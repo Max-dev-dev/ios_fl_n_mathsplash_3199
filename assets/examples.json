@@ -1,0 +1,61 @@
+{
+    "math_quiz": {
+      "Easy": [
+        {"example": "5 + 3 = ?", "answers": [8, 9, 10], "correct_answer": 8},
+        {"example": "12 - 4 = ?", "answers": [6, 8, 9], "correct_answer": 8},
+        {"example": "7 + 2 = ?", "answers": [8, 9, 10], "correct_answer": 9},
+        {"example": "10 - 3 = ?", "answers": [6, 7, 8], "correct_answer": 7},
+        {"example": "2 × 4 = ?", "answers": [6, 7, 8], "correct_answer": 8},
+        {"example": "9 - 5 = ?", "answers": [3, 4, 5], "correct_answer": 4},
+        {"example": "6 + 6 = ?", "answers": [10, 12, 14], "correct_answer": 12},
+        {"example": "8 ÷ 2 = ?", "answers": [2, 3, 4], "correct_answer": 4},
+        {"example": "3 × 3 = ?", "answers": [6, 8, 9], "correct_answer": 9},
+        {"example": "15 - 7 = ?", "answers": [7, 8, 9], "correct_answer": 8},
+        {"example": "4 × 2 = ?", "answers": [6, 8, 10], "correct_answer": 8},
+        {"example": "14 - 6 = ?", "answers": [6, 7, 8], "correct_answer": 8},
+        {"example": "9 + 5 = ?", "answers": [13, 14, 15], "correct_answer": 14},
+        {"example": "20 ÷ 4 = ?", "answers": [4, 5, 6], "correct_answer": 5},
+        {"example": "7 × 1 = ?", "answers": [6, 7, 8], "correct_answer": 7},
+        {"example": "16 - 8 = ?", "answers": [6, 7, 8], "correct_answer": 8},
+        {"example": "11 + 4 = ?", "answers": [14, 15, 16], "correct_answer": 15},
+        {"example": "18 ÷ 6 = ?", "answers": [2, 3, 4], "correct_answer": 3},
+        {"example": "5 × 2 = ?", "answers": [8, 9, 10], "correct_answer": 10},
+        {"example": "30 ÷ 5 = ?", "answers": [5, 6, 7], "correct_answer": 6}
+      ],
+      "Medium": [
+        {"example": "15 × 2 = ?", "answers": [30, 25, 35], "correct_answer": 30},
+        {"example": "50 ÷ 5 = ?", "answers": [5, 10, 15], "correct_answer": 10},
+        {"example": "9 × 4 = ?", "answers": [32, 35, 36], "correct_answer": 36},
+        {"example": "72 ÷ 8 = ?", "answers": [7, 8, 9], "correct_answer": 9},
+        {"example": "14 × 3 = ?", "answers": [40, 41, 42], "correct_answer": 42},
+        {"example": "81 ÷ 9 = ?", "answers": [8, 9, 10], "correct_answer": 9},
+        {"example": "25 × 2 = ?", "answers": [40, 45, 50], "correct_answer": 50},
+        {"example": "36 ÷ 6 = ?", "answers": [5, 6, 7], "correct_answer": 6},
+        {"example": "11 × 4 = ?", "answers": [42, 43, 44], "correct_answer": 44},
+        {"example": "40 ÷ 5 = ?", "answers": [7, 8, 9], "correct_answer": 8},
+        {"example": "9 × 6 = ?", "answers": [52, 54, 56], "correct_answer": 54},
+        {"example": "64 ÷ 8 = ?", "answers": [7, 8, 9], "correct_answer": 8},
+        {"example": "17 × 3 = ?", "answers": [50, 51, 52], "correct_answer": 51},
+        {"example": "90 ÷ 9 = ?", "answers": [8, 9, 10], "correct_answer": 10},
+        {"example": "21 × 2 = ?", "answers": [40, 41, 42], "correct_answer": 42},
+        {"example": "48 ÷ 6 = ?", "answers": [7, 8, 9], "correct_answer": 8},
+        {"example": "13 × 5 = ?", "answers": [64, 65, 66], "correct_answer": 65},
+        {"example": "56 ÷ 7 = ?", "answers": [7, 8, 9], "correct_answer": 8},
+        {"example": "19 × 4 = ?", "answers": [75, 76, 77], "correct_answer": 76},
+        {"example": "35 ÷ 5 = ?", "answers": [6, 7, 8], "correct_answer": 7}
+      ],
+      "Hard": [
+        {"example": "45 ÷ 3 + 2 = ?", "answers": [15, 17, 18], "correct_answer": 17},
+        {"example": "8 × 6 - 4 = ?", "answers": [44, 46, 48], "correct_answer": 44},
+        {"example": "9 × (8 - 3) = ?", "answers": [40, 42, 45], "correct_answer": 45},
+        {"example": "100 ÷ (5 + 5) = ?", "answers": [8, 10, 12], "correct_answer": 10},
+        {"example": "(18 ÷ 3) × 4 = ?", "answers": [20, 22, 24], "correct_answer": 24},
+        {"example": "(5 × 6) - (3 × 4) = ?", "answers": [12, 18, 22], "correct_answer": 18},
+        {"example": "50 ÷ (2 × 5) = ?", "answers": [5, 10, 15], "correct_answer": 5},
+        {"example": "(24 ÷ 6) × 3 = ?", "answers": [10, 12, 14], "correct_answer": 12},
+        {"example": "9 × (7 - 2) = ?", "answers": [40, 42, 45], "correct_answer": 45},
+        {"example": "(36 ÷ 6) + 5 = ?", "answers": [10, 11, 12], "correct_answer": 11}
+      ]
+    }
+  }
+  
