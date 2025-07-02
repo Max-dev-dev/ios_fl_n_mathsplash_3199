@@ -64,6 +64,16 @@ Future<void> _identifyUserInOneSignal(String tsId) async {
   }
 }
 
+Future<String> _pollForOneSignalId({Duration interval = const Duration(milliseconds: 200), Duration timeout = const Duration(seconds: 5)}) async {
+  final deadline = DateTime.now().add(timeout);
+  while (DateTime.now().isBefore(deadline)) {
+    final id = await OneSignal.User.getOnesignalId();
+    if (id != null) return id;
+    await Future.delayed(interval);
+  }
+  throw Exception('Timed out waiting for OneSignal ID');
+}
+
 
 Future<void> _requestAppTracking() async {
   final status = await AppTrackingTransparency.requestTrackingAuthorization();
@@ -288,10 +298,8 @@ class _VerificationScreenState extends State<VerificationScreen> {
         final swedMap = await setUpConversionTimer(sdk);
 
         // 12) Отримання one_signal_id
-        final oneSignalId = await OneSignal.User.getOnesignalId();
-        if (oneSignalId != null) {
-          await prefs.setString('one_signal_id', oneSignalId!);
-        }
+        final oneSignalId = await _pollForOneSignalId();
+        await prefs.setString('one_signal_id', oneSignalId);
 
         // 13) Збереження даних у SharedPreferences та формування urlWeb
         final idFv = prefs.getString('custom_user_id') ?? '';
