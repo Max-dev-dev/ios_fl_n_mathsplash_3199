@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:ios_f_n_mathsplashcountbignumbers_3199/ver_screen.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -115,6 +116,7 @@ class _UrlWebViewAppState extends State<UrlWebViewApp> {
     ));
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
+
     if (widget.openedByPush) {
       widget.pushUrl?.isEmpty ?? true ? sendEvent('push_open_webview') : sendEvent('push_open_browser');
       isPush = false;
@@ -137,6 +139,19 @@ class _UrlWebViewAppState extends State<UrlWebViewApp> {
     if (isFirst) {
       if (prefs.getBool('permission_granted') ?? true) await sendEvent('push_subscribe');
       prefs.setBool('is_first_launch', false);
+
+      await _identifyUserInOneSignal(timestampUserId!);
+    }
+  }
+
+  Future<void> _identifyUserInOneSignal(String tsId) async {
+    try {
+      if (tsId != null && tsId.isNotEmpty) {
+        await OneSignal.login(tsId);
+        print('OneSignal External ID : $tsId');
+      }
+    } catch (e) {
+      print('Error External ID: $e');
     }
   }
 

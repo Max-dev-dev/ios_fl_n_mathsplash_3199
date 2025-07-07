@@ -3,6 +3,7 @@ import 'dart:math';
 import 'dart:io';
 import 'package:advertising_id/advertising_id.dart';
 import 'package:app_tracking_transparency/app_tracking_transparency.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ios_f_n_mathsplashcountbignumbers_3199/main.dart';
@@ -17,6 +18,8 @@ String? urlPush;
 String? timestampUserId;
 bool isPush = false;
 String deepLink = "";
+String idfv = '';
+String idfa = '';
 
 // Перевірка чи є інтернет
 Future<bool> hasInternetConnection() async {
@@ -51,17 +54,6 @@ Future<void> setUpOneSignal() async {
 // Відправка тегу OneSignal
 Future<void> sendTagByOneSignal(String tsId) async {
   await OneSignal.User.addTagWithKey('timestamp_user_id', tsId);
-}
-
-Future<void> _identifyUserInOneSignal(String tsId) async {
-  try {
-    if (tsId != null && tsId.isNotEmpty) {
-      await OneSignal.login(tsId);
-      print('OneSignal External ID : $tsId');
-    }
-  } catch (e) {
-    print('Error External ID: $e');
-  }
 }
 
 Future<String> _pollForOneSignalId({Duration interval = const Duration(milliseconds: 200), Duration timeout = const Duration(seconds: 5)}) async {
@@ -248,7 +240,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
         // 5) Відправка тегу OneSignal
         await sendTagByOneSignal(timestampUserId!);
 
-        await _identifyUserInOneSignal(timestampUserId!);
+
         // 6)Івент 'uniq_visit'
         await sendEvent('uniq_visit');
 
@@ -263,27 +255,9 @@ class _VerificationScreenState extends State<VerificationScreen> {
           return;
         }
 
-        // 6) ATT + IDFA
-        final status = await AppTrackingTransparency.requestTrackingAuthorization();
-
-        debugPrint('AppTrackingTransparency status: $status');
-
-        String? idfa;
-        if (status == TrackingStatus.authorized) {
-          const channel = MethodChannel('app.id.values');
-          idfa = await channel.invokeMethod<String>('requestTrackingAndGetIdfa');
-          debugPrint('IDFA: $idfa');
-        } else {
-          idfa = '00000000-0000-0000-0000-000000000000';
-        }
-
-        await prefs.setString('advertising_id', idfa ?? '');
-
-        // 7) IDFV
-        final idfv = await DeviceIdentifiers.getIdfv();
-        if (idfv != null) {
-          await prefs.setString('custom_user_id', idfv);
-        }
+        final iosInfo = await DeviceInfoPlugin().iosInfo;
+        idfv = iosInfo.identifierForVendor ?? '';
+        await prefs.setString('custom_user_id', idfv);
 
         // 10) AppsFlyer + setCustomerUserId(idfv)
         final sdk = await setUpAppsFlyer();
@@ -388,7 +362,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
   }
 }
 
-class RootApp extends StatelessWidget {
+class RootApp extends StatefulWidget {
   final String initialRoute;
   final Widget whiteScreen;
 
@@ -399,15 +373,68 @@ class RootApp extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<RootApp> createState() => _RootAppState();
+}
+
+class _RootAppState extends State<RootApp> with WidgetsBindingObserver {
+  bool _attRequested = false;
+  static const String _fallbackIdfa = '00000000-0000-0000-0000-000000000000';
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _requestTrackingAndSaveIdfa();
+    _attRequested = true;
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (!_attRequested && state == AppLifecycleState.resumed) {
+      _requestTrackingAndSaveIdfa();
+      _attRequested = true;
+    }
+  }
+
+  Future<void> _requestTrackingAndSaveIdfa() async {
+    final status = await AppTrackingTransparency.requestTrackingAuthorization();
+    debugPrint('ATT status: $status');
+
+    String newIdfa;
+    if (status == TrackingStatus.authorized) {
+      try {
+        newIdfa = await AdvertisingId.id(true) ?? _fallbackIdfa;
+      } catch (_) {
+        newIdfa = _fallbackIdfa;
+      }
+    } else {
+      newIdfa = _fallbackIdfa;
+    }
+
+    // 3) Зберігаємо у shared prefs
+    idfa = newIdfa;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('advertising_id', idfa);
+    debugPrint('Saved IDFA: $idfa');
+  }
+
+  @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: initialRoute,
+      initialRoute: widget.initialRoute,
       routes: {
-        '/white': (_) => whiteScreen,
+        '/white': (_) => widget.whiteScreen,
         '/verify': (_) => const VerificationScreen(),
         '/webview': (ctx) {
-          final args = ModalRoute.of(ctx)!.settings.arguments as UrlWebViewArgs;
+          final args =
+          ModalRoute.of(ctx)!.settings.arguments as UrlWebViewArgs;
           return UrlWebViewApp(
             url: args.url,
             pushUrl: args.pushUrl,
@@ -425,17 +452,4 @@ class UrlWebViewArgs {
   final bool openedByPush;
 
   UrlWebViewArgs(this.url, this.pushUrl, this.openedByPush);
-}
-
-class DeviceIdentifiers {
-  static const _channel = MethodChannel('app.id.values');
-
-  static Future<String?> getIdfv() async {
-    try {
-      return await _channel.invokeMethod<String>('getIdfv');
-    } on PlatformException catch (e) {
-      debugPrint('Error fetching IDFV: $e');
-      return null;
-    }
-  }
 }
